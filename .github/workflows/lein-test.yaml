@@ -26,7 +26,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
       - name: Install Clojure tools
-        uses: DeLaGuardo/setup-clojure@10.2
+        uses: DeLaGuardo/setup-clojure@13.4
         with:
           cli: latest              # Clojure CLI based on tools.deps
           lein: latest                  # Leiningen
@@ -34,6 +34,7 @@ jobs:
           bb: latest                    # Babashka
           clj-kondo: latest        # Clj-kondo
           cljstyle: latest             # cljstyle
+          zprint: latest                # zprint
       - name: Run lein tests with dev test profile
         run: lein with-profile dev test
       - name: Run lein tests with fips profile
