@@ -34,7 +34,6 @@ jobs:
           bb: latest                    # Babashka
           clj-kondo: latest        # Clj-kondo
           cljstyle: latest             # cljstyle
-          zprint: latest                # zprint
       - name: Run lein tests with dev test profile
         run: lein with-profile dev test
       - name: Run lein tests with fips profile
