@@ -1,14 +1,14 @@
 (def jetty-10-version "10.0.20")
 
-(defproject com.puppetlabs/trapperkeeper-webserver-jetty10 "1.0.19-SNAPSHOT"
-  :description "A jetty10-based webserver implementation for use with the puppetlabs/trapperkeeper service framework."
-  :url "https://github.com/puppetlabs/trapperkeeper-webserver-jetty10"
+(defproject org.openvoxproject/trapperkeeper-webserver-jetty10 "1.0.19-SNAPSHOT"
+  :description "A jetty10-based webserver implementation for use with the org.openvoxproject/trapperkeeper service framework."
+  :url "https://github.com/openvoxproject/trapperkeeper-webserver-jetty10"
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
 
   :min-lein-version "2.9.1"
 
-  :parent-project {:coords [puppetlabs/clj-parent "7.3.5"]
+  :parent-project {:coords [org.openvoxproject/clj-parent "7.5.1"]
                    :inherit [:managed-dependencies]}
 
   ;; Abort when version ranges or version conflicts are detected in
@@ -43,11 +43,11 @@
                  [ch.qos.logback/logback-core]
                  [ch.qos.logback/logback-classic]
 
-                 [puppetlabs/ssl-utils]
-                 [puppetlabs/kitchensink]
-                 [puppetlabs/trapperkeeper]
-                 [puppetlabs/i18n]
-                 [puppetlabs/trapperkeeper-filesystem-watcher]
+                 [org.openvoxproject/ssl-utils]
+                 [org.openvoxproject/kitchensink]
+                 [org.openvoxproject/trapperkeeper]
+                 [org.openvoxproject/i18n]
+                 [org.openvoxproject/trapperkeeper-filesystem-watcher]
 
                  [org.slf4j/jul-to-slf4j]]
 
@@ -55,11 +55,11 @@
   :java-source-paths  ["java"]
 
   :plugins [[lein-parent "0.3.7"]
-            [puppetlabs/i18n "0.8.0"]]
+            [org.openvoxproject/i18n "0.9.4"]]
 
   :deploy-repositories [["releases" {:url "https://clojars.org/repo"
-                                     :username :env/clojars_jenkins_username
-                                     :password :env/clojars_jenkins_password
+                                     :username :env/CLOJARS_USERNAME
+                                     :password :env/CLOJARS_PASSWORD
                                      :sign-releases false}]]
 
   ;; By declaring a classifier here and a corresponding profile below we'll get an additional jar
@@ -78,9 +78,9 @@
                       :java-source-paths ["examples/servlet_app/src/java"
                                           "test/java"]
                       :resource-paths ["dev-resources"]
-                      :dependencies [[puppetlabs/http-client]
-                                     [puppetlabs/kitchensink nil :classifier "test"]
-                                     [puppetlabs/trapperkeeper nil :classifier "test"]
+                      :dependencies [[org.openvoxproject/http-client]
+                                     [org.openvoxproject/kitchensink nil :classifier "test"]
+                                     [org.openvoxproject/trapperkeeper nil :classifier "test"]
                                      [org.clojure/tools.namespace]
                                      [compojure]
                                      [ring/ring-core]
@@ -96,12 +96,12 @@
                          ;; that sets up the JVM classpaths during installation.
                          :jvm-opts ~(let [version (System/getProperty "java.version")
                                           [major minor _] (clojure.string/split version #"\.")
-                                          unsupported-ex (ex-info "Unsupported major Java version. Expects 11 or 17."
+                                          unsupported-ex (ex-info "Unsupported major Java version. Expects 17 or 21"
                                                                   {:major major
                                                                    :minor minor})]
                                       (condp = (java.lang.Integer/parseInt major)
-                                        11 ["-Djava.security.properties==dev-resources/jdk11-fips-security"]
                                         17 ["-Djava.security.properties==dev-resources/jdk17-fips-security"]
+                                        21 ["-Djava.security.properties==dev-resources/jdk21-fips-security"]
                                         (throw unsupported-ex)))}
              :fips [:shared :fips-only]
 
@@ -113,8 +113,4 @@
              :testutils {:source-paths ^:replace ["test/clj"]
                          :java-source-paths ^:replace ["test/java"]}}
 
-  :main puppetlabs.trapperkeeper.main
-
-  :repositories [["puppet-releases" "https://artifactory.delivery.puppetlabs.net/artifactory/list/clojure-releases__local/"]
-                 ["puppet-snapshots" "https://artifactory.delivery.puppetlabs.net/artifactory/list/clojure-snapshots__local/"]])
-
+  :main puppetlabs.trapperkeeper.main)
