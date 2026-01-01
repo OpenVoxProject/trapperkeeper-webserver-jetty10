@@ -1,5 +1,11 @@
 ## unreleased changes
 
+## 1.0.20
+- update to Jetty 10.0.26 to resolve [CVE-2025-5115](https://github.com/advisories/GHSA-mmxm-8w33-wc4h)
+
+## 1.0.19
+- Migrate from Puppetlabs to OpenVoxProject
+
 ## 1.0.18
 - update to clj-parent 7.3.5
 - add pcp-client jetty dependencies to dependency list, to allow them to be centrally managed 

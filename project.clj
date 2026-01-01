@@ -1,4 +1,4 @@
-(def jetty-10-version "10.0.20")
+(def jetty-10-version "10.0.26")
 
 (defproject org.openvoxproject/trapperkeeper-webserver-jetty10 "1.0.20-SNAPSHOT"
   :description "A jetty10-based webserver implementation for use with the org.openvoxproject/trapperkeeper service framework."
