@@ -15,6 +15,7 @@ jobs:
     name: lein test - Java ${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         java: [ '17', '21' ]
     steps:
