@@ -1,20 +1,21 @@
+---
 name: lein_test
 
 on:
-  workflow_dispatch:
+  pull_request: {}
   push:
     branches:
       - main
-    paths: ['src/**','test/**', 'project.clj']
-  pull_request:
-    types: [opened, reopened, edited, synchronize]
-    paths: ['src/**','test/**', 'project.clj']
+
+permissions:
+  contents: read
 
 jobs:
   run-lein-tests:
     name: lein test - Java ${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         java: [ '17', '21' ]
     steps:
@@ -39,3 +40,15 @@ jobs:
         run: lein with-profile dev test
       - name: Run lein tests with fips profile
         run: lein with-profile fips test
+
+  tests:
+    if: always()
+    needs:
+      - run-lein-tests
+    runs-on: ubuntu-24.04
+    name: Test suite
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
