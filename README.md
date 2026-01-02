@@ -184,7 +184,7 @@ when the `:normalize-request-uri` setting is true:
   ```
   /foo//bar/%2E%2E/ba%7A => /foo//bar/../baz
   ```
-  
+
   If a non-percent encoded semicolon character, U+003B, is found in the path
   during the percent decoding step, that character and all following characters
   will be removed from the resulting path, unless there is another forward
@@ -232,7 +232,7 @@ when the `:normalize-request-uri` setting is true:
   /foo//bar/../baz
   /foo//./bar/baz
   ```
-  
+
   The following paths would not be considered to contain relative paths:
 
   ```
@@ -241,7 +241,7 @@ when the `:normalize-request-uri` setting is true:
   /foo//bar/a.b/baz
   /foo//bar/a..b/baz
   ```
-  
+
 3. Compact any repeated forward slash characters in a path.
 
   For example:
@@ -280,7 +280,7 @@ at `/css`:
 There is also a three argument version of the function which takes these arguments:
 `[base-path context-path options]`, where the first two arguments are the
 same as in the two argument version and `options` is a map containing five optional keys,
-`:server-id`, `:redirect-if-no-trailing-slash`, `:normalize-request-uri`, 
+`:server-id`, `:redirect-if-no-trailing-slash`, `:normalize-request-uri`,
 `:follow-links`, and `:context-listeners`.
 
 The value stored in `:server-id` specifies which server
@@ -506,7 +506,7 @@ route:
 * `:redirect-if-no-trailing-slash`: optional; a boolean indicating whether or not to redirect
   when a request is made to this proxy route without a trailing slash, as with `add-ring-handler`.
   Defaults to false.
-* `:idle-timeout`: optional; sets the maximum amount of time, measured in seconds, for the proxy to 
+* `:idle-timeout`: optional; sets the maximum amount of time, measured in seconds, for the proxy to
   wait for a response from the upstream server. If no response is received within the time
   specified, then an HTTP 504 error is returned. If this option is not specified then a value
   of 30 seconds is used.
@@ -755,8 +755,8 @@ consumer to setup SSL keys and perform other operations needed before the server
 
 #### `start`
 
-In the start lifecycle phase the Jetty server object is created, the `ContextHandlerCollection` is added to it, and the server is then started. Adding handlers 
-after this phase should still work fine, but it is recommended that handlers be added 
+In the start lifecycle phase the Jetty server object is created, the `ContextHandlerCollection` is added to it, and the server is then started. Adding handlers
+after this phase should still work fine, but it is recommended that handlers be added
 during the consuming service's `init` phase.
 
 ## Webrouting Service
@@ -772,4 +772,4 @@ is available [here](doc/test-utils.md).
 
 ## Support
 
-GitHub issues and PRs are welcome! Additionally, drop us a line in [the Vox Pupuli Slack](https://voxpupuli.slack.com).
+GitHub issues and PRs are welcome! Additionally, drop us a line in [the Vox Pupuli Slack or IRC channel](https://voxpupuli.org/connect/).
