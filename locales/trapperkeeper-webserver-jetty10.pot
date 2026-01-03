@@ -103,16 +103,6 @@ msgstr ""
 msgid "Access log configuration not specified"
 msgstr ""
 
-#: src/puppetlabs/trapperkeeper/services/webserver/jetty10_config.clj
-msgid ""
-"The ''post-config-script'' setting is for advanced use cases only, and may "
-"be subject to minor changes when the application is upgraded."
-msgstr ""
-
-#: src/puppetlabs/trapperkeeper/services/webserver/jetty10_config.clj
-msgid "Invalid script string in webserver ''post-config-script'' configuration"
-msgstr ""
-
 #: src/puppetlabs/trapperkeeper/services/webserver/jetty10_core.clj
 msgid "Removing buggy security provider {0}"
 msgstr ""

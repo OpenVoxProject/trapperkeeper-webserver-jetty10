@@ -12,12 +12,9 @@
            (com.puppetlabs.ssl_utils SSLUtils)
            (com.puppetlabs.trapperkeeper.services.webserver.jetty10.utils MDCAccessLogConverter ModifiedRequestLogImpl)
            (java.io File FileInputStream)
-           (java.lang.reflect InvocationTargetException)
            (java.nio.file Files)
            (java.security KeyStore)
            (java.util HashMap)
-           (org.codehaus.commons.compiler CompileException)
-           (org.codehaus.janino ScriptEvaluator)
            (org.eclipse.jetty.server Server)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -141,7 +138,6 @@
    (schema/optional-key :gzip-enable)                schema/Bool
    (schema/optional-key :access-log-config)          schema/Str
    (schema/optional-key :shutdown-timeout-seconds)   schema/Int
-   (schema/optional-key :post-config-script)         schema/Str
    (schema/optional-key :allow-renegotiation)        schema/Bool
    (schema/optional-key :sni-required)               schema/Bool})
 
@@ -227,6 +223,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Conversion functions (raw config -> schema)
+
+(schema/defn ^:always-validate
+  reject-post-config-script!
+  [config :- (schema/maybe WebserverRawConfig)]
+  (when (and config (contains? config :post-config-script))
+    (throw
+      (IllegalArgumentException.
+        (i18n/trs "The ''post-config-script'' setting has been removed. Please remove it from your config.")))))
 
 (schema/defn ^:always-validate
   warn-if-so-linger-set
@@ -457,6 +461,7 @@
 (schema/defn ^:always-validate
   process-config :- WebserverConfig
   [config :- WebserverRawConfig]
+  (reject-post-config-script! config)
   (warn-if-so-linger-set config)
   (let [result (-> {}
                    (maybe-add-http-connector config)
@@ -496,20 +501,3 @@
   (if (:access-log-config config)
     (init-log-handler config)
     (log/info (i18n/trs "Access log configuration not specified"))))
-
-(schema/defn ^:always-validate
-  execute-post-config-script!
-  [s :- Server
-   script :- schema/Str]
-  (log/warn (i18n/trs "The ''post-config-script'' setting is for advanced use cases only, and may be subject to minor changes when the application is upgraded."))
-  (let [script-err-msg (i18n/trs "Invalid script string in webserver ''post-config-script'' configuration")]
-    (try
-      (let [evaluator (doto (ScriptEvaluator.)
-                        (.setParameters (into-array String ["server"])
-                                        (into-array Class [Server]))
-                        (.cook script))]
-        (.evaluate evaluator (into-array Object [s])))
-      (catch CompileException ex
-        (throw (IllegalArgumentException. script-err-msg ex)))
-      (catch InvocationTargetException ex
-        (throw (IllegalArgumentException. script-err-msg ex))))))
