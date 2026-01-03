@@ -775,8 +775,6 @@
       (when shutdown-timeout
         (log/info (i18n/trs "Server shutdown timeout set to {0} milliseconds" shutdown-timeout))
         (.setStopTimeout s shutdown-timeout))
-      (when-let [script (:post-config-script options)]
-        (config/execute-post-config-script! s script))
       (assoc webserver-context :server s))))
 
 (schema/defn ^:always-validate start-webserver! :- ServerContext

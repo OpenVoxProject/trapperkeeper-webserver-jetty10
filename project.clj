@@ -1,6 +1,6 @@
 (def jetty-10-version "10.0.26")
 
-(defproject org.openvoxproject/trapperkeeper-webserver-jetty10 "1.0.20-SNAPSHOT"
+(defproject org.openvoxproject/trapperkeeper-webserver-jetty10 "1.1.0-SNAPSHOT"
   :description "A jetty10-based webserver implementation for use with the org.openvoxproject/trapperkeeper service framework."
   :url "https://github.com/openvoxproject/trapperkeeper-webserver-jetty10"
   :license {:name "Apache License, Version 2.0"
@@ -8,7 +8,7 @@
 
   :min-lein-version "2.9.1"
 
-  :parent-project {:coords [org.openvoxproject/clj-parent "7.5.1"]
+  :parent-project {:coords [org.openvoxproject/clj-parent "7.6.3"]
                    :inherit [:managed-dependencies]}
 
   ;; Abort when version ranges or version conflicts are detected in
@@ -19,7 +19,6 @@
                  [org.clojure/java.jmx]
                  [org.clojure/tools.logging]
 
-                 [org.codehaus.janino/janino]
                  [org.flatland/ordered "1.5.9"]
 
                  [javax.servlet/javax.servlet-api "4.0.1"]
@@ -54,8 +53,8 @@
   :source-paths  ["src"]
   :java-source-paths  ["java"]
 
-  :plugins [[lein-parent "0.3.7"]
-            [org.openvoxproject/i18n "0.9.4"]]
+  :plugins [[lein-parent "0.3.9"]
+            [org.openvoxproject/i18n "1.0.2"]]
 
   :deploy-repositories [["releases" {:url "https://clojars.org/repo"
                                      :username :env/CLOJARS_USERNAME
