@@ -1,6 +1,6 @@
 (def jetty-10-version "10.0.26")
 (def logback-version "1.3.16")
-(def kitchensink-version "3.5.3")
+(def kitchensink-version "3.5.5")
 (def trapperkeeper-version "4.3.0")
 (def i18n-version "1.0.2")
 (def slf4j-version "2.0.17")
@@ -28,6 +28,7 @@
                          [ring/ring-codec "1.3.0"]
                          [commons-codec "1.20.0"]
                          [commons-io "2.21.0"]
+                         [clj-time "0.15.2"]
 
                          [org.slf4j/slf4j-api ~slf4j-version]
                          [org.slf4j/jul-to-slf4j ~slf4j-version]
