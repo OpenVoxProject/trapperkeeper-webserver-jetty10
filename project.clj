@@ -2,7 +2,7 @@
 (def logback-version "1.3.16")
 (def kitchensink-version "3.5.5")
 (def trapperkeeper-version "4.3.0")
-(def i18n-version "1.0.2")
+(def i18n-version "1.0.3")
 (def slf4j-version "2.0.17")
 
 (defproject org.openvoxproject/trapperkeeper-webserver-jetty10 "1.1.1-SNAPSHOT"
