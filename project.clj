@@ -28,6 +28,7 @@
                          [ring/ring-codec "1.3.0"]
                          [commons-codec "1.20.0"]
                          [commons-io "2.21.0"]
+                         [clj-time "0.15.2"]
 
                          [org.slf4j/slf4j-api ~slf4j-version]
                          [org.slf4j/jul-to-slf4j ~slf4j-version]
