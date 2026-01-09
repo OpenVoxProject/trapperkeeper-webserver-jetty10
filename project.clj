@@ -71,7 +71,7 @@
                  [ch.qos.logback/logback-core ~logback-version]
                  [ch.qos.logback/logback-classic ~logback-version]
 
-                 [org.openvoxproject/ssl-utils "3.6.1"]
+                 [org.openvoxproject/ssl-utils "3.6.2"]
                  [org.openvoxproject/kitchensink]
                  [org.openvoxproject/trapperkeeper]
                  [org.openvoxproject/i18n ~i18n-version]
