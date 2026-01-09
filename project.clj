@@ -45,7 +45,7 @@
   
   :dependencies [[org.clojure/clojure]
                  [org.clojure/java.jmx "1.1.1"]
-                 [org.clojure/tools.logging "1.2.4"]
+                 [org.clojure/tools.logging "1.3.1"]
 
                  [org.flatland/ordered "1.5.9"]
 
