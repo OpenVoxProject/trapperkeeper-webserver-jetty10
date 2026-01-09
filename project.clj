@@ -63,7 +63,7 @@
                  [org.eclipse.jetty.websocket/websocket-jetty-api ~jetty-10-version]
 
 
-                 [prismatic/schema "1.1.12"]
+                 [prismatic/schema "1.4.1"]
                  [ring/ring-servlet "1.15.3"]
                  [ring/ring-codec]
                  [ch.qos.logback/logback-access ~logback-version]
