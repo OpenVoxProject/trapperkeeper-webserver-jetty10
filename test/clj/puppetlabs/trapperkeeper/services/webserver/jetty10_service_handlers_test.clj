@@ -11,11 +11,34 @@
             [puppetlabs.trapperkeeper.testutils.webserver :as testutils]
             [puppetlabs.trapperkeeper.testutils.webserver.common :refer :all]
             [schema.test :as schema-test])
-  (:import (java.nio.file Files Paths)
+  (:import (java.nio ByteBuffer)
+           (java.nio.file Files Paths)
            (java.nio.file.attribute FileAttribute)
+           (java.util Arrays)
            (javax.servlet ServletContextListener)
            (javax.servlet.http HttpServlet HttpServletRequest HttpServletResponse)
            (servlet SimpleServlet)))
+
+(defn await!
+  "Derefs x with timeout-ms. Fails the test if it times out.
+   Returns the deref'd value on success."
+  ([x] (await! x 10000 "Timed out waiting for async result"))
+  ([x timeout-ms msg]
+   (let [v (deref x timeout-ms ::timeout)]
+     (when (= v ::timeout)
+       (is false msg))
+     v)))
+
+(defn wait-for
+  "Polls (pred) until it returns truthy or timeout-ms elapses."
+  ([pred] (wait-for pred 10000))
+  ([pred timeout-ms]
+   (let [deadline (+ (System/nanoTime) (* timeout-ms 1000000))]
+     (loop []
+       (cond
+         (pred) true
+         (< (System/nanoTime) deadline) (do (Thread/sleep 10) (recur))
+         :else false)))))
 
 (use-fixtures :once
   schema-test/validate-schemas
@@ -23,52 +46,60 @@
 
 (deftest static-content-test
   (with-test-logging
-    (testing "static content context"
-      (with-app-with-config app
-        [jetty10-service]
-        jetty-plaintext-config
-        (let [s                   (get-service app :WebserverService)
-              add-context-handler (partial add-context-handler s)
-              path                "/resources"
-              resource            "logback.xml"]
-          (add-context-handler dev-resources-dir path)
-          (let [response (http-get (str "http://localhost:8080" path "/" resource))]
-            (is (= (:status response) 200))
-            (is (= (:body response) (slurp (str dev-resources-dir resource))))))))
+    (letfn [(wait-for
+              ([pred timeout-ms]
+               (let [deadline (+ (System/nanoTime) (* timeout-ms 1000000))]
+                 (loop []
+                   (cond
+                     (pred) true
+                     (< (System/nanoTime) deadline) (do (Thread/sleep 10) (recur))
+                     :else false)))))]
+      (testing "static content context"
+        (with-app-with-config app
+          [jetty10-service]
+          jetty-plaintext-config
+          (let [s                   (get-service app :WebserverService)
+                add-context-handler (partial add-context-handler s)
+                path                "/resources"
+                resource            "logback.xml"]
+            (add-context-handler dev-resources-dir path)
+            (let [response (http-get (str "http://localhost:8080" path "/" resource))]
+              (is (= (:status response) 200))
+              (is (= (:body response) (slurp (str dev-resources-dir resource))))))))
 
-    (testing "static content context with add-context-handler-to"
-      (with-app-with-config app
-        [jetty10-service]
-        jetty-multiserver-plaintext-config
-        (let [s                      (get-service app :WebserverService)
-              add-context-handler (partial add-context-handler s)
-              path                   "/resources"
-              resource               "logback.xml"]
-          (add-context-handler dev-resources-dir path {:server-id :foo})
-          (let [response (http-get (str "http://localhost:8085" path "/" resource))]
-            (is (= (:status response) 200))
-            (is (= (:body response) (slurp (str dev-resources-dir resource))))))))
+      (testing "static content context with add-context-handler-to"
+        (with-app-with-config app
+          [jetty10-service]
+          jetty-multiserver-plaintext-config
+          (let [s                   (get-service app :WebserverService)
+                add-context-handler (partial add-context-handler s)
+                path                "/resources"
+                resource            "logback.xml"]
+            (add-context-handler dev-resources-dir path {:server-id :foo})
+            (let [response (http-get (str "http://localhost:8085" path "/" resource))]
+              (is (= (:status response) 200))
+              (is (= (:body response) (slurp (str dev-resources-dir resource))))))))
 
-    (testing "customization of static content context"
-      (with-app-with-config app
-        [jetty10-service]
-        jetty-plaintext-config
-        (let [s                   (get-service app :WebserverService)
-              add-context-handler (partial add-context-handler s)
-              path                "/resources"
-              body                "Hey there"
-              servlet-path        "/hey"
-              servlet             (SimpleServlet. body "text/html" false)
-              context-listeners   [(reify ServletContextListener
-                                     (contextInitialized [this event]
-                                       (doto (.addServlet (.getServletContext event) "simple" servlet)
-                                         (.addMapping (into-array [servlet-path]))))
-                                     (contextDestroyed [this event]))]]
-          (add-context-handler dev-resources-dir path {:context-listeners context-listeners})
-          (let [response (http-get (str "http://localhost:8080" path servlet-path))]
-            (is (= (:status response) 200))
-            (is (= "text/html;charset=utf-8" (get-in response [:headers "content-type"])))
-            (is (= (:body response) body))))))))
+      (testing "customization of static content context"
+        (with-app-with-config app
+          [jetty10-service]
+          jetty-plaintext-config
+          (let [s                  (get-service app :WebserverService)
+                add-context-handler (partial add-context-handler s)
+                path                "/resources"
+                body                "Hey there"
+                servlet-path        "/hey"
+                servlet             (SimpleServlet. body "text/html" false)
+                context-listeners   [(reify ServletContextListener
+                                       (contextInitialized [this event]
+                                         (doto (.addServlet (.getServletContext event) "simple" servlet)
+                                           (.addMapping (into-array [servlet-path]))))
+                                       (contextDestroyed [this event]))]]
+            (add-context-handler dev-resources-dir path {:context-listeners context-listeners})
+            (let [response (http-get (str "http://localhost:8080" path servlet-path))]
+              (is (= (:status response) 200))
+              (is (= "text/html;charset=utf-8" (get-in response [:headers "content-type"])))
+              (is (= (:body response) body)))))))))
 
 (deftest add-context-handler-symlinks-test
   (with-test-logging
@@ -232,44 +263,99 @@
                                                     (ws-session/send! ws (str "You said: " text))
                                                     (swap! server-messages conj text))
                                       :on-bytes   (fn [ws bytes offset len]
-                                                    (let [as-vec (vec bytes)]
+                                                    (let [as-vec (vec (Arrays/copyOfRange bytes offset (+ offset len)))]
                                                       (ws-session/send! ws (byte-array (reverse as-vec)))
                                                       (swap! server-binary-messages conj as-vec)))
-                                      :on-error   (fn [ws error])  ;; TODO - Add test for on-error behaviour
+                                      :on-error   (fn [_ws error]
+                                                    (deliver binary-client-message
+                                                             {:error error
+                                                              :stacktrace (with-out-str (.printStackTrace ^Throwable error))})
+                                                    (deliver closed
+                                                             {:error error
+                                                              :stacktrace (with-out-str (.printStackTrace ^Throwable error))}))
                                       :on-close   (fn [ws code reason]
                                                     (swap! connected dec)
                                                     (reset! closed-request-path (ws-session/request-path ws))
                                                     (deliver closed true))}]
           (add-websocket-handler handlers path)
-          (let [socket @(ws-client/websocket (str "ws://localhost:8080" path "/foo")
-                                             {:on-message (fn [ws msg last?]
-                                                            ;; I don't know what it is but this homegrown instance? test
-                                                            ;; works, but (instance? java.nio.HeapCharBuffer msg) seemingly
-                                                            ;; crashes this function without exception
-                                                            (if (= (str (type msg)) "class java.nio.HeapCharBuffer")
-                                                              (swap! client-messages conj (str msg))
-                                                              ;; One would think there would be a java class function for this,
-                                                              ;; but I didn't see anything obvious, there is no backing array to call
-                                                              ;; https://resources.mpi-inf.mpg.de/d5/teaching/ss05/is05/javadoc/java/nio/CharBuffer.html#array()
-                                                              (let [char-buffer-array (loop [i 0
-                                                                                             array []]
-                                                                                        (if (= i 5)
-                                                                                          array
-                                                                                          (recur (+ i 1) (conj array (.get msg i)))))]
-                                                                (swap! client-binary-messages conj char-buffer-array)
-                                                                (deliver binary-client-message true))))
-                                              :http-client (http/build-http-client
-                                                            {:ssl-context {:insecure? true}})})]
-            (ws-client/send! socket "Hello websocket handler")
-            (ws-client/send! socket "You look dandy")
-            (ws-client/send! socket (byte-array [2 1 2 3 3]))
-            (deref binary-client-message)
-            (is (= @connected 1))
+          (let [socket (await!
+                        (ws-client/websocket
+                         (str "ws://localhost:8080" path "/foo")
+                         {:on-message (fn [_ws msg _last?]
+                                        (cond
+                                          (string? msg)
+                                          (swap! client-messages conj msg)
+
+                                          (instance? java.nio.CharBuffer msg)
+                                          (swap! client-messages conj (str msg))
+
+                                          (instance? (Class/forName "[B") msg)
+                                          (do
+                                            (swap! client-binary-messages conj (vec ^bytes msg))
+                                            (deliver binary-client-message true))
+
+                                          (instance? java.nio.ByteBuffer msg)
+                                          (let [^java.nio.ByteBuffer bb msg
+                                                bb' (.duplicate bb)
+                                                bytes (byte-array (.remaining bb'))]
+                                            (.get bb' bytes)
+                                            (swap! client-binary-messages conj (vec bytes))
+                                            (deliver binary-client-message true))
+
+                                          :else
+                                          (deliver binary-client-message {:unexpected-type (type msg)}))
+                                        nil)
+                          :on-error   (fn [_ws error]
+                                        (deliver binary-client-message
+                                                 {:error error
+                                                  :stacktrace (with-out-str (.printStackTrace ^Throwable error))})
+                                        (deliver closed
+                                                 {:error error
+                                                  :stacktrace (with-out-str (.printStackTrace ^Throwable error))}))
+                          :http-client (http/build-http-client
+                                        {:ssl-context {:insecure? true}})})
+                        10000
+                        "Timed out connecting websocket")]
+
+            ;; Wait for server-side :on-connect to run before we start asserting.
+            (is (wait-for #(= 1 @connected) 10000)
+                "Timed out waiting for websocket connect")
+
+            ;; Ensure sends are flushed/completed to reduce timing flakiness.
+            @(ws-client/send! socket "Hello websocket handler")
+            @(ws-client/send! socket "You look dandy")
+            @(ws-client/send! socket (ByteBuffer/wrap (byte-array [2 1 2 3 3])))
+
+            ;; Wait for the binary echo to be observed on the client.
+            (let [v (await! binary-client-message 10000 "Timed out waiting for binary message")]
+              (when (map? v)
+                (is false (str "Websocket async failure: " (pr-str v)))))
+
+            ;; Wait for all expected messages to arrive before asserting exact contents.
+            (is (wait-for #(= 2 (count @server-messages)) 10000)
+                "Timed out waiting for server text messages")
+            (is (wait-for #(= 1 (count @server-binary-messages)) 10000)
+                "Timed out waiting for server binary message")
+            (is (wait-for #(= 3 (count @client-messages)) 10000)
+                "Timed out waiting for client text messages")
+            (is (wait-for #(= 1 (count @client-binary-messages)) 10000)
+                "Timed out waiting for client binary message")
+
             (is (= @client-request-path "/foo"))
             (is (re-matches #"/127\.0\.0\.1:\d+" @client-remote-addr))
             (is (= @client-is-ssl false))
+
             (ws-client/close! socket)
-            (deref closed)
+
+            (let [v (await! closed 10000 "Timed out waiting for websocket close")]
+              (when (map? v)
+                (is false (str "Websocket close error: " (pr-str v))))
+              (is (true? v) (str "Unexpected close result: " (pr-str v))))
+
+            ;; Give the server's :on-close bookkeeping time to complete.
+            (is (wait-for #(zero? @connected) 10000)
+                "Timed out waiting for server close bookkeeping")
+
             (is (= @closed-request-path "/foo"))
             (is (= @connected 0))
             (is (= @server-binary-messages [[2 1 2 3 3]]))
@@ -291,12 +377,23 @@
               closed                 (promise)
               handlers               {:on-connect (fn [ws] (ws-session/close! ws))}]
           (add-websocket-handler handlers path)
-          (let [_socket @(ws-client/websocket (str "ws://localhost:8080" path)
-                                              {:on-close (fn [ws code _reason] (deliver closed code))
-                                               :http-client (http/build-http-client
-                                                             {:ssl-context {:insecure? true}})})]
+          (let [_socket (await!
+                         (ws-client/websocket
+                          (str "ws://localhost:8080" path)
+                          {:on-close (fn [_ws code _reason] (deliver closed code))
+                           :on-error (fn [_ws error]
+                                       (deliver closed
+                                                {:error error
+                                                 :stacktrace (with-out-str (.printStackTrace ^Throwable error))}))
+                           :http-client (http/build-http-client
+                                         {:ssl-context {:insecure? true}})})
+                         10000
+                         "Timed out connecting websocket (close-without-reason)")]
             ;; 1000 is for normal closure https://tools.ietf.org/html/rfc6455#section-7.4.1
-            (is (= 1000 @closed))))))
+            (let [v (await! closed 10000 "Timed out waiting for close code")]
+              (when (map? v)
+                (is false (str "Websocket close error: " (pr-str v))))
+              (is (= 1000 v)))))))
 
     (testing "can close with reason"
       (with-app-with-config app
@@ -308,11 +405,22 @@
               closed                 (promise)
               handlers               {:on-connect (fn [ws] (ws-session/close! ws 4000 "Bye"))}]
           (add-websocket-handler handlers path)
-          (let [_socket @(ws-client/websocket (str "ws://localhost:8080" path)
-                                              {:on-close (fn [ws code reason] (deliver closed [code reason]))
-                                               :http-client (http/build-http-client
-                                                             {:ssl-context {:insecure? true}})})]
-            (is (= [4000 "Bye"] @closed))))))))
+          (let [_socket (await!
+                         (ws-client/websocket
+                          (str "ws://localhost:8080" path)
+                          {:on-close (fn [_ws code reason] (deliver closed [code reason]))
+                           :on-error (fn [_ws error]
+                                       (deliver closed
+                                                {:error error
+                                                 :stacktrace (with-out-str (.printStackTrace ^Throwable error))}))
+                           :http-client (http/build-http-client
+                                         {:ssl-context {:insecure? true}})})
+                         10000
+                         "Timed out connecting websocket (close-with-reason)")]
+            (let [v (await! closed 10000 "Timed out waiting for close code/reason")]
+              (when (map? v)
+                (is false (str "Websocket close error: " (pr-str v))))
+              (is (= [4000 "Bye"] v)))))))))
 
 (deftest war-test
   (with-test-logging
