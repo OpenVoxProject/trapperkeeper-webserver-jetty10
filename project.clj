@@ -47,7 +47,7 @@
                  [org.clojure/java.jmx "1.1.1"]
                  [org.clojure/tools.logging "1.3.1"]
 
-                 [org.flatland/ordered "1.5.9"]
+                 [org.flatland/ordered "1.15.12"]
 
                  [javax.servlet/javax.servlet-api "4.0.1"]
                  ;; Jetty Webserver
