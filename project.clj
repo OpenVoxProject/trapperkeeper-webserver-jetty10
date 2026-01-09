@@ -1,5 +1,5 @@
 (def jetty-10-version "10.0.26")
-(def logback-version "1.3.16")
+(def logback-version "1.5.24")
 (def kitchensink-version "3.5.5")
 (def trapperkeeper-version "4.3.0")
 (def i18n-version "1.0.3")
