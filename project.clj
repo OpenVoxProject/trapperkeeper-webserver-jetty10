@@ -106,7 +106,7 @@
                                           "test/java"]
                       :resource-paths ["dev-resources"]
                       :dependencies [[org.openvoxproject/http-client "2.2.1"]
-                                     [org.openvoxproject/kitchensink nil :classifier "test"]
+                                     [org.openvoxproject/kitchensink 3.5.5 :classifier "test"]
                                      [org.openvoxproject/trapperkeeper nil :classifier "test"]
                                      [org.clojure/tools.namespace "0.2.11"]
                                      [compojure "1.7.1"]
