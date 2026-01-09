@@ -64,7 +64,7 @@
 
 
                  [prismatic/schema "1.1.12"]
-                 [ring/ring-servlet "1.8.2"]
+                 [ring/ring-servlet "1.15.3"]
                  [ring/ring-codec]
                  [ch.qos.logback/logback-access ~logback-version]
                  [ch.qos.logback/logback-core ~logback-version]
