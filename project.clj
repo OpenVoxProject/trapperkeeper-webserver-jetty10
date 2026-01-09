@@ -124,7 +124,7 @@
                                      [org.openvoxproject/kitchensink :classifier "test"]
                                      [org.openvoxproject/trapperkeeper :classifier "test"]
                                      [org.clojure/tools.namespace "0.3.1"]
-                                     [compojure "1.7.1"]
+                                     [compojure "1.7.2"]
                                      [ring/ring-core]
                                      [hato "1.0.0"]]}
              :dev-only {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
