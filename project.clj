@@ -110,7 +110,7 @@
                                      [org.clojure/tools.namespace "0.2.11"]
                                      [compojure "1.7.1"]
                                      [ring/ring-core]
-                                     [hato "0.9.0"]]}
+                                     [hato "1.0.0"]]}
              :dev-only {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
                         :jvm-opts ["-Djava.util.logging.config.file=dev-resources/logging.properties"]}
              :dev [:shared :dev-only]
