@@ -120,7 +120,7 @@
                       :java-source-paths ["examples/servlet_app/src/java"
                                           "test/java"]
                       :resource-paths ["dev-resources"]
-                      :dependencies [[org.openvoxproject/http-client "2.2.1"]
+                      :dependencies [[org.openvoxproject/http-client "2.2.2"]
                                      [org.openvoxproject/kitchensink :classifier "test"]
                                      [org.openvoxproject/trapperkeeper :classifier "test"]
                                      [org.clojure/tools.namespace "0.3.1"]
