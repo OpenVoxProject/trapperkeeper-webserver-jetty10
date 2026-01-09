@@ -37,6 +37,7 @@
   ;; defined under :dependencies ends up causing an error due to :pedantic? :abort,
   ;; because it is a dep of a dep with a different version, move it here.
   :managed-dependencies [[org.clojure/clojure "1.12.4"]
+                         [org.clojure/tools.reader "1.5.0"]
 
                          [ring/ring-core "1.15.3"]
                          [ring/ring-codec "1.3.0"]
@@ -122,7 +123,7 @@
                       :dependencies [[org.openvoxproject/http-client "2.2.1"]
                                      [org.openvoxproject/kitchensink :classifier "test"]
                                      [org.openvoxproject/trapperkeeper :classifier "test"]
-                                     [org.clojure/tools.namespace "0.2.11"]
+                                     [org.clojure/tools.namespace "0.3.1"]
                                      [compojure "1.7.1"]
                                      [ring/ring-core]
                                      [hato "1.0.0"]]}
