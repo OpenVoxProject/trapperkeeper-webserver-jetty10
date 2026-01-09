@@ -107,7 +107,7 @@
                       :resource-paths ["dev-resources"]
                       :dependencies [[org.openvoxproject/http-client "2.2.1"]
                                      [org.openvoxproject/kitchensink nil :classifier "test"]
-                                     [org.openvoxproject/trapperkeeper nil :classifier "test"]
+                                     [org.openvoxproject/trapperkeeper 4.3.1 :classifier "test"]
                                      [org.clojure/tools.namespace "0.2.11"]
                                      [compojure "1.7.1"]
                                      [ring/ring-core]
