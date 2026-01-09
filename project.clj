@@ -24,7 +24,7 @@
   ;; because it is a dep of a dep with a different version, move it here.
   :managed-dependencies [[org.clojure/clojure "1.12.4"]
 
-                         [ring/ring-core "1.8.2"]
+                         [ring/ring-core "1.15.3"]
                          [ring/ring-codec "1.3.0"]
                          [commons-codec "1.20.0"]
                          [commons-io "2.21.0"]
