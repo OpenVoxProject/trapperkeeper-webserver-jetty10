@@ -75,7 +75,7 @@
                  [org.openvoxproject/kitchensink]
                  [org.openvoxproject/trapperkeeper]
                  [org.openvoxproject/i18n ~i18n-version]
-                 [org.openvoxproject/trapperkeeper-filesystem-watcher "1.3.0"]
+                 [org.openvoxproject/trapperkeeper-filesystem-watcher "1.5.0"]
 
                  [org.slf4j/jul-to-slf4j]]
 
