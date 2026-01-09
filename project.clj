@@ -44,7 +44,7 @@
                          [org.openvoxproject/trapperkeeper ~trapperkeeper-version :classifier "test"]]
   
   :dependencies [[org.clojure/clojure]
-                 [org.clojure/java.jmx "1.0.0"]
+                 [org.clojure/java.jmx "1.1.1"]
                  [org.clojure/tools.logging "1.2.4"]
 
                  [org.flatland/ordered "1.5.9"]
