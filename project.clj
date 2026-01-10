@@ -38,6 +38,7 @@
   ;; because it is a dep of a dep with a different version, move it here.
   :managed-dependencies [[org.clojure/clojure "1.12.4"]
                          [org.clojure/tools.reader "1.6.0"]
+                         [org.clojure/tools.macro "0.2.1"]
 
                          [ring/ring-core "1.15.3"]
                          [ring/ring-codec "1.3.0"]
@@ -124,7 +125,7 @@
                                      [org.openvoxproject/kitchensink :classifier "test"]
                                      [org.openvoxproject/trapperkeeper :classifier "test"]
                                      [org.clojure/tools.namespace "0.3.1"]
-                                     [compojure "1.7.1"]
+                                     [compojure "1.7.2"]
                                      [ring/ring-core]
                                      [hato "1.0.0"]]}
              :dev-only {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
