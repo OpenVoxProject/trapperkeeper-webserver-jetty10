@@ -124,7 +124,7 @@
                       :dependencies [[org.openvoxproject/http-client "2.2.2"]
                                      [org.openvoxproject/kitchensink :classifier "test"]
                                      [org.openvoxproject/trapperkeeper :classifier "test"]
-                                     [org.clojure/tools.namespace "0.3.1"]
+                                     [org.clojure/tools.namespace "1.5.1"]
                                      [compojure "1.7.2"]
                                      [ring/ring-core]
                                      [hato "1.0.0"]]}
