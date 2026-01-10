@@ -1,4 +1,4 @@
-(def jetty-10-version "10.0.26")
+(def jetty-10-version "11.0.26")
 (def logback-version "1.3.16")
 (def kitchensink-version "3.5.5")
 (def trapperkeeper-version "4.3.2")
