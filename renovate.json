@@ -5,5 +5,12 @@
   "automerge": true,
   "automergeType": "pr",
   "dependencyDashboard": true,
-  "enabledManagers": ["leiningen"]
+  "enabledManagers": ["leiningen"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["org.eclipse.jetty*"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
 }
