@@ -1,8 +1,6 @@
+(def i18n-version "1.0.3")
 (def jetty-10-version "10.0.26")
 (def logback-version "1.3.16")
-(def kitchensink-version "3.5.5")
-(def trapperkeeper-version "4.3.2")
-(def i18n-version "1.0.3")
 (def slf4j-version "2.0.17")
 
 (require '[clojure.string :as str]
@@ -32,68 +30,89 @@
   ;; requires lein 2.2.0+.
   :pedantic? :abort
 
-  ;; These are to enforce consistent versions across dependencies of dependencies,
-  ;; and to avoid having to define versions in multiple places. If a component
-  ;; defined under :dependencies ends up causing an error due to :pedantic? :abort,
-  ;; because it is a dep of a dep with a different version, move it here.
+  ;; Generally, try to keep version pins in :managed-dependencies and the libraries
+  ;; this project actually uses in :dependencies, inheriting the version from
+  ;; :managed-dependencies. This prevents endless version conflicts due to deps of deps.
+  ;; Renovate should keep the versions largely in sync between projects.
   :managed-dependencies [[org.clojure/clojure "1.12.4"]
+                         [org.clojure/java.jmx "1.1.1"]
+                         [org.clojure/tools.logging "1.3.1"]
+                         [org.clojure/tools.namespace "0.3.1"]
                          [org.clojure/tools.reader "1.6.0"]
                          [org.clojure/tools.macro "0.2.2"]
 
-                         [ring/ring-core "1.15.3"]
-                         [ring/ring-codec "1.3.0"]
+                         ;; Jetty Webserver
+                         [org.eclipse.jetty/jetty-jmx ~jetty-10-version]
+                         [org.eclipse.jetty/jetty-proxy ~jetty-10-version]
+                         [org.eclipse.jetty/jetty-server ~jetty-10-version]
+                         [org.eclipse.jetty/jetty-servlet ~jetty-10-version]
+                         [org.eclipse.jetty/jetty-servlets ~jetty-10-version]
+                         [org.eclipse.jetty/jetty-webapp ~jetty-10-version]
+                         [org.eclipse.jetty.websocket/websocket-jetty-server ~jetty-10-version]
+                         ;; used in pcp-client
+                         [org.eclipse.jetty.websocket/websocket-jetty-api ~jetty-10-version]
+                         [org.eclipse.jetty.websocket/websocket-jetty-client ~jetty-10-version]
+                         
+                         [ch.qos.logback/logback-access ~logback-version]
+                         [ch.qos.logback/logback-classic ~logback-version]
+                         [ch.qos.logback/logback-core ~logback-version]
+                         [clj-time "0.15.2"]
                          [commons-codec "1.20.0"]
                          [commons-io "2.21.0"]
-                         [clj-time "0.15.2"]
-
-                         [org.slf4j/slf4j-api ~slf4j-version]
-                         [org.slf4j/jul-to-slf4j ~slf4j-version]
-                         [org.slf4j/log4j-over-slf4j ~slf4j-version]
-
+                         [compojure "1.7.2"]
+                         [hato "1.0.0"]
+                         [javax.servlet/javax.servlet-api "4.0.1"]
                          [org.bouncycastle/bcpkix-jdk18on "1.83"]
                          [org.bouncycastle/bcpkix-fips "1.0.8"]
                          [org.bouncycastle/bc-fips "1.0.2.6"]
                          [org.bouncycastle/bctls-fips "1.0.19"]
-  
-                         [org.openvoxproject/kitchensink ~kitchensink-version]
-                         [org.openvoxproject/kitchensink ~kitchensink-version :classifier "test"]
-                         [org.openvoxproject/trapperkeeper ~trapperkeeper-version]
-                         [org.openvoxproject/trapperkeeper ~trapperkeeper-version :classifier "test"]]
+                         [org.flatland/ordered "1.15.12"]
+                         [org.openvoxproject/http-client "2.2.2"]
+                         [org.openvoxproject/i18n ~i18n-version]
+                         [org.openvoxproject/kitchensink "3.5.5"]
+                         [org.openvoxproject/kitchensink "3.5.5" :classifier "test"]
+                         [org.openvoxproject/ssl-utils "3.6.2"]
+                         [org.openvoxproject/trapperkeeper "4.3.2"]
+                         [org.openvoxproject/trapperkeeper "4.3.2" :classifier "test"]
+                         [org.openvoxproject/trapperkeeper-filesystem-watcher "1.5.1"]
+                         [org.slf4j/jul-to-slf4j ~slf4j-version]
+                         [org.slf4j/log4j-over-slf4j ~slf4j-version]
+                         [org.slf4j/slf4j-api ~slf4j-version]
+                         [prismatic/schema "1.4.1"]
+                         [ring/ring-codec "1.3.0"]
+                         [ring/ring-core "1.15.3"]
+                         [ring/ring-servlet "1.15.3"]]
   
   :dependencies [[org.clojure/clojure]
-                 [org.clojure/java.jmx "1.1.1"]
-                 [org.clojure/tools.logging "1.3.1"]
+                 [org.clojure/java.jmx]
+                 [org.clojure/tools.logging]
 
-                 [org.flatland/ordered "1.15.12"]
-
-                 [javax.servlet/javax.servlet-api "4.0.1"]
                  ;; Jetty Webserver
-                 [org.eclipse.jetty/jetty-server ~jetty-10-version]
-                 [org.eclipse.jetty/jetty-servlet ~jetty-10-version]
-                 [org.eclipse.jetty/jetty-servlets ~jetty-10-version]
-                 [org.eclipse.jetty/jetty-webapp ~jetty-10-version]
-                 [org.eclipse.jetty/jetty-proxy ~jetty-10-version]
-                 [org.eclipse.jetty/jetty-jmx ~jetty-10-version]
-                 [org.eclipse.jetty.websocket/websocket-jetty-server ~jetty-10-version]
+                 [org.eclipse.jetty/jetty-server]
+                 [org.eclipse.jetty/jetty-servlet]
+                 [org.eclipse.jetty/jetty-servlets]
+                 [org.eclipse.jetty/jetty-webapp]
+                 [org.eclipse.jetty/jetty-proxy]
+                 [org.eclipse.jetty/jetty-jmx]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server]
                  ;; used in pcp-client
-                 [org.eclipse.jetty.websocket/websocket-jetty-client ~jetty-10-version]
-                 [org.eclipse.jetty.websocket/websocket-jetty-api ~jetty-10-version]
+                 [org.eclipse.jetty.websocket/websocket-jetty-client]
+                 [org.eclipse.jetty.websocket/websocket-jetty-api]
 
-
-                 [prismatic/schema "1.4.1"]
-                 [ring/ring-servlet "1.15.3"]
-                 [ring/ring-codec]
-                 [ch.qos.logback/logback-access ~logback-version]
-                 [ch.qos.logback/logback-core ~logback-version]
-                 [ch.qos.logback/logback-classic ~logback-version]
-
-                 [org.openvoxproject/ssl-utils "3.6.2"]
+                 [ch.qos.logback/logback-access]
+                 [ch.qos.logback/logback-classic]
+                 [ch.qos.logback/logback-core]
+                 [javax.servlet/javax.servlet-api]
+                 [org.flatland/ordered]
+                 [org.openvoxproject/i18n]
                  [org.openvoxproject/kitchensink]
+                 [org.openvoxproject/ssl-utils]
                  [org.openvoxproject/trapperkeeper]
-                 [org.openvoxproject/i18n ~i18n-version]
-                 [org.openvoxproject/trapperkeeper-filesystem-watcher "1.5.1"]
-
-                 [org.slf4j/jul-to-slf4j]]
+                 [org.openvoxproject/trapperkeeper-filesystem-watcher]
+                 [org.slf4j/jul-to-slf4j]
+                 [prismatic/schema]
+                 [ring/ring-codec]
+                 [ring/ring-servlet]]
 
   :source-paths  ["src"]
   :java-source-paths  ["java"]
@@ -121,13 +140,14 @@
                       :java-source-paths ["examples/servlet_app/src/java"
                                           "test/java"]
                       :resource-paths ["dev-resources"]
-                      :dependencies [[org.openvoxproject/http-client "2.2.2"]
+                      :dependencies [[compojure]
+                                     [hato]
+                                     [org.clojure/tools.namespace]
+                                     [org.openvoxproject/http-client]
                                      [org.openvoxproject/kitchensink :classifier "test"]
                                      [org.openvoxproject/trapperkeeper :classifier "test"]
-                                     [org.clojure/tools.namespace "0.3.1"]
-                                     [compojure "1.7.2"]
                                      [ring/ring-core]
-                                     [hato "1.0.0"]]}
+                                     ]}
              :dev-only {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
                         :jvm-opts ["-Djava.util.logging.config.file=dev-resources/logging.properties"]}
              :dev [:shared :dev-only]
