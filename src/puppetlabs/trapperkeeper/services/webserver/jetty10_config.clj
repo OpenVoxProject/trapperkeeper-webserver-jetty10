@@ -258,6 +258,15 @@
   get-x509s-from-ssl-cert-pem :- (schema/pred ssl/certificate-list?)
   [ssl-cert :- schema/Str
    ssl-cert-chain :- (schema/maybe schema/Str)]
+  (log/error "DEBUG ssl-cert value:" (pr-str ssl-cert))
+  (log/error "DEBUG ssl-cert class:" (class ssl-cert))
+  (log/error "DEBUG File exists?:" (.exists (java.io.File. ssl-cert)))
+  (log/error "DEBUG File canRead?:" (.canRead (java.io.File. ssl-cert)))
+  (log/error "DEBUG fs/readable?:" (fs/readable? ssl-cert))
+  (log/error "DEBUG ssl-cert-chain value:" (pr-str ssl-cert-chain))
+  (log/error "DEBUG read-cert-chain class:" (class ssl-cert-chain))
+  (log/error "DEBUG file contents:" (slurp ssl-cert))
+  (log/error "DEBUG read-cert value:" (ssl/pem->certs ssl-cert))
   (if-not (fs/readable? ssl-cert)
     (throw (IllegalArgumentException. (i18n/trs "Unable to open ''ssl-cert'' file: {0}" ssl-cert))))
   (let [certs (ssl/pem->certs ssl-cert)]
