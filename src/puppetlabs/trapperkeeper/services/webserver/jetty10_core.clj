@@ -523,8 +523,34 @@
               (.start handler)))
   handler)
 
+(defn- accepts-gzip?
+  [req]
+  (when-let [ae (get-in req [:headers "accept-encoding"])]
+    ;; very simple, robust enough for this purpose
+    (boolean (re-find #"(?i)\bgzip\b" ae))))
+
+(defn- strip-content-length-when-compressible
+  "If gzip might be applied downstream, remove Content-Length so Jetty can
+   choose correct framing (chunked) after compression."
+  [req {:keys [status headers] :as resp}]
+  (let [status (or status 200)
+        method (:request-method req)
+        content-encoding (some-> headers (get "Content-Encoding"))
+        gzip-possible? (or content-encoding (accepts-gzip? req))]
+    (cond
+      ;; Never send CL for responses that must not have a body framing header
+      (or (= method :head) (= status 204) (= status 304))
+      (update resp :headers dissoc "Content-Length" "content-length")
+
+      ;; If gzip might apply, don't keep a precomputed Content-Length
+      gzip-possible?
+      (update resp :headers dissoc "Content-Length" "content-length")
+
+      :else
+      resp)))
+
 (defn- ring-handler
-  "Returns an Jetty Handler implementation for the given Ring handler."
+  "Returns a Jetty Handler implementation for the given Ring handler."
   [handler]
   (proxy [HandlerWrapper] []
     (handle [_ ^Request base-request request response]
@@ -532,7 +558,8 @@
                            :response response)
             response-map (handler request-map)]
         (when response-map
-          (servlet/update-servlet-response response response-map)
+          (let [response-map (strip-content-length-when-compressible request-map response-map)]
+            (servlet/update-servlet-response response response-map))
           (.setHandled base-request true))))))
 
 (schema/defn ^:always-validate
