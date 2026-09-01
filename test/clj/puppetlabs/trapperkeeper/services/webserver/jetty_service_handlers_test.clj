@@ -1,6 +1,5 @@
 (ns puppetlabs.trapperkeeper.services.webserver.jetty-service-handlers-test
   (:require [clojure.test :refer :all]
-            [hato.client :as http]
             [puppetlabs.trapperkeeper.app :refer [get-service]]
             [puppetlabs.trapperkeeper.services.webserver.jetty-service :refer :all]
             [puppetlabs.trapperkeeper.testutils.bootstrap :refer [with-app-with-config]]
