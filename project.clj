@@ -44,7 +44,6 @@
                          [commons-codec "1.22.1"]
                          [commons-io "2.22.0"]
                          [compojure "1.7.2"]
-                         [hato "1.0.0"]
                          [javax.servlet/javax.servlet-api "4.0.1"]
                          [org.bouncycastle/bcpkix-jdk18on "1.85"]
                          [org.bouncycastle/bcpkix-fips "1.0.8"]
@@ -121,7 +120,6 @@
                       :java-source-paths ["examples/servlet_app/src/java"
                                           "test/java"]
                       :dependencies [[compojure]
-                                     [hato]
                                      [org.clojure/tools.namespace]
                                      [org.openvoxproject/http-client]
                                      [org.openvoxproject/kitchensink :classifier "test"]
