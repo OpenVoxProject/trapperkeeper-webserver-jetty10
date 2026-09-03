@@ -703,7 +703,7 @@
        :proxy        {:host "0.0.0.0"
                       :port 10000}
        :proxy-config {:host "localhost"
-                      :port 123456789                       ; illegal port number
+                      :port 1                       ; illegal port number
                       :path "/hello"}
        :ring-handler proxy-ring-handler}
       (let [response (http-get "http://localhost:10000/hello-proxy/world")]
